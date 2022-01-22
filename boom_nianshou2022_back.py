@@ -5,13 +5,15 @@ import pyautogui
 # 置信度
 confidence = 0.62
 # 最小尺寸
-# pos = (0, 0, 1000, 650)
+pos = (0, 0, 1200, 650)
 # 适中尺寸
 # pos = (0, 0, 1500, 900)
 # 默认尺寸
-pos = (0, 0, 1920, 1080)
+# pos = (0, 0, 1920, 1080)
 # 牌局内玩家皮肤区域
 player_pos = (850, 460, 250, 250)
+# 牌局内玩家出牌及附近区域
+player_bottom_pos = (0, 350, 1200, 350)
 # 游戏开始时间
 game_start_time = 0
 
@@ -58,18 +60,29 @@ if __name__ == '__main__':
             game_start_time = int(time.time())
         elif have_btn_position('cardsLight.png') or have_btn_position('cardsDark.png'):
             # 牌局内
-            if have_btn_position('cancelHostingBtn.png') is None or have_btn_position(
-                    'hostingText.png') is None or have_btn_position('hostingTextOnAvator.png') is None:
+            if have_btn_position('cancelHostingBtn.png', player_bottom_pos) is None and have_btn_position(
+                    'cancelHostingBtnText.png', player_bottom_pos) is None and have_btn_position(
+                    'hostingText.png', player_bottom_pos) is None and have_btn_position('hostingTextOnAvator.png',
+                                                                                       player_pos) is None:
                 # 牌局内等待托管
                 print('牌局内等待托管')
                 # time.sleep(20)
                 # 开始托管
                 print('开始托管')
                 find_btn_and_click('hostingLight.png')
+                pyautogui.moveRel(0, -35)
             else:
                 # 牌局内托管中
                 print('牌局内托管中')
-                if have_btn_position('player3GreyBlood.png', player_pos) and have_btn_position(
+                # 尝试关闭游戏内全场最佳结算页面
+                if have_btn_position('bestPlayer.png'):
+                    print('尝试关闭游戏内全场最佳结算页面')
+                    find_btn_and_click('bestPlayer.png')
+                    time.sleep(2)
+                elif have_btn_position('gameEndResult.png'):
+                    print('尝试关闭结算页面')
+                    find_btn_and_click('gameEndResult.png')
+                elif have_btn_position('player3GreyBlood.png', player_pos) and have_btn_position(
                         'playerGreenBlood.png', player_pos) is None and have_btn_position(
                     'playerRedBlood.png', player_pos) is None and have_btn_position('playerYellowBlood.png',
                                                                                     player_pos) is None:
@@ -82,14 +95,6 @@ if __name__ == '__main__':
                         print('确定退出牌局')
                         find_btn_and_click('exitGameYesBtn.png')
 
-                # 尝试关闭游戏内全场最佳结算页面
-                elif have_btn_position('bestPlayer.png'):
-                    print('尝试关闭游戏内全场最佳结算页面')
-                    find_btn_and_click('bestPlayer.png')
-                    time.sleep(2)
-                elif have_btn_position('gameEndResult.png'):
-                    print('尝试关闭结算页面')
-                    find_btn_and_click('gameEndResult.png')
                 else:
                     time.sleep(8)
         else:
